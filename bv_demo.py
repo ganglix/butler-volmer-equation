@@ -24,17 +24,6 @@ def main():
     Use the sidebar to adjust the parameters and observe the changes in the graph.
     """)
 
-    st.write("""
-    The relationship between the currents in the Butler-Volmer equation can be described as:
-
-    \[
-    i = i_a + i_c
-    \]
-
-    where \( i \) is the total current, \( i_a \) is the anodic (positive) current, and \( i_c \) is the cathodic (negative) current.
-
-    In the logarithmic scale plot, the cathodic current \( i_c \) is plotted as \( |i_c| \) to account for its negative value.
-    """)
 
     # Input parameters in the sidebar
     i0 = st.sidebar.slider('Exchange current density (i0) [A/m^2]', 0.01, 100.0, 1.0)
@@ -76,6 +65,19 @@ def main():
 
     plt.tight_layout()
     st.pyplot(fig)
+
+
+    st.write("""
+    The relationship between the currents in the Butler-Volmer equation can be described as:
+
+    \[
+    i = i_a + i_c
+    \]
+
+    where \( i \) is the total current, \( i_a \) is the anodic (positive) current, and \( i_c \) is the cathodic (negative) current.
+
+    In the logarithmic scale plot, the cathodic current \( i_c \) is plotted as \( |i_c| \) to account for its negative value.
+    """)
 
 if __name__ == '__main__':
     main()
