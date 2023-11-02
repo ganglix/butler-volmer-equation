@@ -6,10 +6,12 @@ import matplotlib.pyplot as plt
 R = 8.314  # J/(mol K)
 F = 96485.3329  # C/mol
 
-def butler_volmer(eta, i0, alpha_a, alpha_c, n, T):
-    """Compute the Butler-Volmer equation for a given overpotential."""
+def butler_volmer(eta, i0, alpha_a, alpha_c, n, T, ilim):
+    """Compute the Butler-Volmer equation for a given overpotential including a limiting current density"""
     ia = i0 * np.exp(alpha_a * n * F * eta / (R * T))
     ic = i0 * np.exp(-alpha_c * n * F * eta / (R * T))
+    if ilim != np.inf:  # Apply limiting current density only if it's not infinity
+        ic = ic / (1 + ic/ilim)
     return ia - ic, ia, ic
 
 def tafel_slope(alpha, n, T):
@@ -21,7 +23,7 @@ def main():
 
     st.write("""
     This app demonstrates the Butler-Volmer equation, which describes the relationship between reaction rate (or current density) and electrode potential. 
-    Use the sidebar to adjust the parameters and observe the changes in the graph.
+    Use the sidebar to adjust the parameters including the limiting current density, and observe the changes in the graph.
     """)
 
 
@@ -35,9 +37,17 @@ def main():
     st.sidebar.text(f'Tafel Slope (cathodic): {tafel_slope(alpha_c, n, T):.2f} V/dec')
     eta_min, eta_max = st.sidebar.slider('Overpotential range (eta) [V]', -1.0, 1.0, (-0.25, 0.25), 0.01)
 
+    use_ilim = st.sidebar.checkbox('Use limiting current density (i_lim)', value=False)
+
+    if use_ilim:
+        ilim = st.sidebar.slider('Limiting current density (i_lim) [A/m^2]', 0.01, 10.0, 1.0)
+    else:
+        ilim = np.inf  # Assign a very large number to ilim when the checkbox is not checked
+
+
     # Generate potential values
     eta = np.linspace(eta_min, eta_max, 1000)
-    i, ia, ic = butler_volmer(eta, i0, alpha_a, alpha_c, n, T)
+    i, ia, ic = butler_volmer(eta, i0, alpha_a, alpha_c, n, T, ilim)
 
     # Plot figures
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
